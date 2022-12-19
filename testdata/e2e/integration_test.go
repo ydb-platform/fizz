@@ -1,3 +1,4 @@
+//go:build e2e
 // +build e2e
 
 package e2e_test
@@ -24,6 +25,8 @@ func TestSpecificSuites(t *testing.T) {
 		suite.Run(t, &MySQLSuite{})
 	case "sqlite":
 		suite.Run(t, &SQLiteSuite{})
+	case "ydb":
+		suite.Run(t, &YdbSQLSuite{})
 	default:
 		t.Fatalf("Got unsupported dialect: %s", d)
 	}
