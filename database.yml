@@ -35,3 +35,9 @@ sqlite:
   options:
     mode: rwc
 
+ydb:
+  dialect: "ydb"
+  database: "/local"
+  options:
+    mode: rwc
+

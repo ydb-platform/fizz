@@ -54,16 +54,23 @@ services:
     image:  cr.yandex/yc/yandex-docker-local-ydb:latest
     environment:
       - YDB_DEFAULT_LOG_LEVEL=NOTICE
-      - GRPC_TLS_PORT=2135
-      - GRPC_PORT=2136
-      - MON_PORT=8765
+      - GRPC_TLS_PORT=2134
+      - GRPC_PORT=2137
+      - MON_PORT=8764
     ports:
-      - "2135:2135"
-      - "8765:8765"
-      - "2136:2136"
+      - "2134:2135"
+      - "8764:8765"
+      - "2137:2136"
     volumes:
       - ./ydb_data:/ydb_data
       - ./ydb_certs:/ydb_certs
+    privileged: true
+    healthcheck:
+          test: ["CMD", "curl", "http://localhost:8080/health"]
+          interval: 5s
+          timeout: 5s
+          retries: 10
+          start_period: 3s
 
 
 #  mssqlserver:

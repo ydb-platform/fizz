@@ -49,6 +49,7 @@ test "sqlite"
 test "postgres"
 test "cockroach"
 test "mysql"
+test "ydb"
 
 # Does not appear to be implemented in pop:
 # test "sqlserver"

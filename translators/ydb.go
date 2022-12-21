@@ -39,7 +39,10 @@ func (p *YDB) CreateTable(table fizz.Table) (string, error) {
 			}
 			primaryColumn = column.Name
 		}
-		col, _ := p.buildAddColumn(column)
+		col, err := p.buildAddColumn(column)
+		if err != nil {
+			return "", err
+		}
 		cols = append(cols, col)
 	}
 
@@ -141,15 +144,9 @@ func (p *YDB) DropForeignKey(fizz.Table) (string, error) {
 
 func (p *YDB) buildAddColumn(c fizz.Column) (string, error) {
 	s := fmt.Sprintf("%s %s", c.Name, p.colType(c))
-
-	if c.Options["null"] == nil {
-		if c.Primary {
-			s = fmt.Sprintf("%s NOT NULL", s)
-		} else {
-			return "", errors.New("you can apply not null only to primary key columns in YDB")
-		}
+	if c.Options["null"] == nil && c.Primary {
+		s = fmt.Sprintf("%s NOT NULL", s)
 	}
-
 	return s, nil
 }
 
