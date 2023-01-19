@@ -27,23 +27,23 @@ function test {
   echo ""
   echo "######################################################################"
   echo "### Running unit tests for $SODA_DIALECT"
-  soda drop -e $SODA_DIALECT
-  soda create -e $SODA_DIALECT
-  soda migrate -e $SODA_DIALECT -p ./testdata/migrations
+  ./tsoda drop -e $SODA_DIALECT
+  ./tsoda create -e $SODA_DIALECT
+  ./tsoda migrate -e $SODA_DIALECT -p ./testdata/migrations
   go test -tags sqlite -count=1 $args ./...
 
   echo ""
   echo "######################################################################"
   echo "### Running e2e tests for $1"
-  soda drop -e $SODA_DIALECT
-  soda create -e $SODA_DIALECT
+  ./tsoda drop -e $SODA_DIALECT
+  ./tsoda create -e $SODA_DIALECT
   pushd testdata/e2e; go test -tags sqlite,e2e -count=1 $args ./...; popd
 }
 
 
 $COMPOSE up --wait
 
-go install -tags sqlite github.com/gobuffalo/pop/v6/soda@latest
+go build -v -tags sqlite -o tsoda ../pop/soda
 
 test "sqlite"
 test "postgres"

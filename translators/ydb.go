@@ -46,6 +46,24 @@ func (p *YDB) CreateTable(table fizz.Table) (string, error) {
 		cols = append(cols, col)
 	}
 
+	indexes := ""
+	for _, index := range table.Indexes {
+		sync, ok := index.Options["syncronicity"].(string)
+		if !ok {
+			sync = ""
+		} else {
+			sync += " "
+		}
+		indexes = fmt.Sprintf("INDEX %s GLOBAL %sON (%s)",
+			index.Name,
+			sync,
+			strings.Join(index.Columns, ", "))
+		cover, ok := index.Options["cover"].(string)
+		if ok {
+			indexes = fmt.Sprintf("%s COVER (%s)", indexes, cover)
+		}
+	}
+
 	primaryKeys := table.PrimaryKeys()
 	if len(primaryKeys) == 0 {
 		if primaryColumn != "" {
@@ -54,21 +72,14 @@ func (p *YDB) CreateTable(table fizz.Table) (string, error) {
 			return "", errors.New("need to specify primary key")
 		}
 	}
-	cols = append(cols, fmt.Sprintf("PRIMARY KEY(%s)", strings.Join(primaryKeys, ", ")))
-	sql := []string{fmt.Sprintf("CREATE TABLE %s (\n%s\n);", table.Name, strings.Join(cols, ",\n"))}
 
-	for _, i := range table.Indexes {
-		s, err := p.AddIndex(fizz.Table{
-			Name:    table.Name,
-			Indexes: []fizz.Index{i},
-		})
-		if err != nil {
-			return "", err
-		}
-		sql = append(sql, s)
+	if len(indexes) > 0 {
+		cols = append(cols, indexes)
 	}
+	cols = append(cols, fmt.Sprintf("PRIMARY KEY(%s)", strings.Join(primaryKeys, ", ")))
+	sql := fmt.Sprintf("CREATE TABLE %s (\n%s\n)", table.Name, strings.Join(cols, ",\n"))
 
-	return strings.Join(sql, "\n"), nil
+	return sql, nil
 }
 
 func (p *YDB) DropTable(table fizz.Table) (string, error) {

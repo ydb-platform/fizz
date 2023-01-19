@@ -37,7 +37,5 @@ sqlite:
 
 ydb:
   dialect: "ydb"
-  database: "/local"
-  options:
-    mode: rwc
+  url: "grpc://localhost:2136/local"
 

@@ -1,72 +1,70 @@
 version: '2'
 
 services:
-  mysql:
-    image: mysql:5.7
-    environment:
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=pop_test
-      - MYSQL_USER=pop
-      - MYSQL_PASSWORD=pop
-    #volumes:
-      #- ./_vol/mysql:/docker-entrypoint-initdb.d
-    ports:
-      - "3307:3306"
-    healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-      start_period: 3s
-
-  postgres:
-    image: postgres:10
-    environment:
-      - POSTGRES_DB=pop_test
-      - POSTGRES_PASSWORD=postgres
-    ports:
-      - "5433:5432"
-    #volumes:
-      #- ./_vol/postgres:/docker-entrypoint-initdb.d
-    healthcheck:
-      test: ["CMD", "pg_isready"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-      start_period: 3s
-
-  cockroach:
-    image: cockroachdb/cockroach:latest-v21.1
-    ports:
-      - "26258:26257"
-      - "8081:8080"
-    #volumes:
-      #- ./_vol/cockroach:/cockroach/cockroach-data
-    command: start-single-node --insecure
-    healthcheck:
-      test: ["CMD", "curl", "http://localhost:8080/health"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-      start_period: 3s
+#   mysql:
+#     image: mysql:5.7
+#     environment:
+#       - MYSQL_ROOT_PASSWORD=root
+#       - MYSQL_DATABASE=pop_test
+#       - MYSQL_USER=pop
+#       - MYSQL_PASSWORD=pop
+#     #volumes:
+#       #- ./_vol/mysql:/docker-entrypoint-initdb.d
+#     ports:
+#       - "3307:3306"
+#     healthcheck:
+#       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+#       interval: 5s
+#       timeout: 5s
+#       retries: 10
+#       start_period: 3s
+#
+#   postgres:
+#     image: postgres:10
+#     environment:
+#       - POSTGRES_DB=pop_test
+#       - POSTGRES_PASSWORD=postgres
+#     ports:
+#       - "5433:5432"
+#     #volumes:
+#       #- ./_vol/postgres:/docker-entrypoint-initdb.d
+#     healthcheck:
+#       test: ["CMD", "pg_isready"]
+#       interval: 5s
+#       timeout: 5s
+#       retries: 10
+#       start_period: 3s
+#
+#   cockroach:
+#     image: cockroachdb/cockroach:latest-v21.1
+#     ports:
+#       - "26258:26257"
+#       - "8081:8080"
+#     #volumes:
+#       #- ./_vol/cockroach:/cockroach/cockroach-data
+#     command: start-single-node --insecure
+#     healthcheck:
+#       test: ["CMD", "curl", "http://localhost:8080/health"]
+#       interval: 5s
+#       timeout: 5s
+#       retries: 10
+#       start_period: 3s
 
   ydb:
     image:  cr.yandex/yc/yandex-docker-local-ydb:latest
+    hostname: localhost
     environment:
-      - YDB_DEFAULT_LOG_LEVEL=NOTICE
-      - GRPC_TLS_PORT=2134
-      - GRPC_PORT=2137
-      - MON_PORT=8764
+      - YDB_DEFAULT_LOG_LEVEL=DEBUG
     ports:
-      - "2134:2135"
-      - "8764:8765"
-      - "2137:2136"
+      - "2135:2135"
+      - "8765:8765"
+      - "2136:2136"
     volumes:
       - ./ydb_data:/ydb_data
       - ./ydb_certs:/ydb_certs
     privileged: true
     healthcheck:
-          test: ["CMD", "curl", "http://localhost:8765"]
+          test: ["CMD", "./health_check"]
           interval: 5s
           timeout: 5s
           retries: 10
