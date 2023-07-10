@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.6.19
--- Dumped by pg_dump version 12.4
+-- Dumped from database version 10.21 (Debian 10.21-1.pgdg90+1)
+-- Dumped by pg_dump version 14.5 (Ubuntu 14.5-1.pgdg20.04+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -71,6 +71,14 @@ ALTER TABLE ONLY public.e2e_user_posts
 
 ALTER TABLE ONLY public.e2e_authors
     ADD CONSTRAINT e2e_users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: schema_migration schema_migration_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.schema_migration
+    ADD CONSTRAINT schema_migration_pkey PRIMARY KEY (version);
 
 
 --
